@@ -1,4 +1,5 @@
 <?php
+namespace ContextIOPHPClient;
 /*
 Copyright (C) 2011 DokDok Inc.
 

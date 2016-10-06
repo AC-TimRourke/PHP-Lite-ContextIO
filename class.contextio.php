@@ -1,10 +1,8 @@
 <?php
+namespace ContextIOPHPClient;
 /**
  * Context.IO Lite API PHP client library
  */
-
-require_once dirname(__FILE__) . '/class.contextioresponse.php';
-require_once dirname(__FILE__) . '/OAuth.php';
 
 /**
  * Class to manage Context.IO Lite API access
@@ -234,10 +232,10 @@ class ContextIO {
 		unset($params['message_id']);
 		unset($params['attachment_id']);
 
-		$consumer = new ContextIOExtLib\OAuthConsumer($this->oauthKey, $this->oauthSecret);
+		$consumer = new OAuthConsumer($this->oauthKey, $this->oauthSecret);
 		$baseUrl = $this->build_url("users/" . $user . "/email_accounts/" . rawurlencode($email_account) . "/folders/" . rawurlencode($folder) . "/messages/" . rawurlencode($messageId) . "/attachments/" . rawurlencode($attachmentId));
-		$req = ContextIOExtLib\OAuthRequest::from_consumer_and_token($consumer, null, "GET", $baseUrl);
-		$sig_method = new ContextIOExtLib\OAuthSignatureMethod_HMAC_SHA1();
+		$req = OAuthRequest::from_consumer_and_token($consumer, null, "GET", $baseUrl);
+		$sig_method = new OAuthSignatureMethod_HMAC_SHA1();
 		$req->sign_request($sig_method, $consumer, null);
 
 		//get data using signed url
@@ -416,14 +414,14 @@ class ContextIO {
 		$messageId = $params['message_id'];
 		$url = "email_accounts/" . rawurlencode($email_account) . "/folders/" . rawurlencode($folder) . "/messages/" . rawurlencode($messageId) . "/raw";
 
-		$consumer = new ContextIOExtLib\OAuthConsumer($this->oauthKey, $this->oauthSecret);
+		$consumer = new OAuthConsumer($this->oauthKey, $this->oauthSecret);
 		$accessToken = null;
 		if (! is_null($this->accessToken) && ! is_null($this->accessTokenSecret)) {
-			$accessToken = new ContextIOExtLib\OAuthToken($this->accessToken, $this->accessTokenSecret);
+			$accessToken = new OAuthToken($this->accessToken, $this->accessTokenSecret);
 		}
 		$baseUrl = $this->build_url('users/' . $user . '/' . $url);
-		$req = ContextIOExtLib\OAuthRequest::from_consumer_and_token($consumer, $accessToken, "GET", $baseUrl);
-		$sig_method = new ContextIOExtLib\OAuthSignatureMethod_HMAC_SHA1();
+		$req = OAuthRequest::from_consumer_and_token($consumer, $accessToken, "GET", $baseUrl);
+		$sig_method = new OAuthSignatureMethod_HMAC_SHA1();
 		$req->sign_request($sig_method, $consumer, $accessToken);
 
 		//get data using signed url
@@ -785,7 +783,7 @@ class ContextIO {
 	}
 
 	protected function _doCall($httpMethod, $user, $action, $parameters=null, $file=null, $acceptableContentTypes=null, $httpHeadersToSet=array()) {
-		$consumer = new ContextIOExtLib\OAuthConsumer($this->oauthKey, $this->oauthSecret);
+		$consumer = new OAuthConsumer($this->oauthKey, $this->oauthSecret);
 		$accessToken = null;
 		if (! is_null($user)) {
 			$action = 'users/' . $user . '/' . $action;
@@ -793,7 +791,7 @@ class ContextIO {
 				$action = substr($action,0,-1);
 			}
 			if (! is_null($this->accessToken) && ! is_null($this->accessTokenSecret)) {
-				$accessToken = new ContextIOExtLib\OAuthToken($this->accessToken, $this->accessTokenSecret);
+				$accessToken = new OAuthToken($this->accessToken, $this->accessTokenSecret);
 			}
 		}
 		$baseUrl = $this->build_url($action);
@@ -837,14 +835,14 @@ class ContextIO {
 
 		}
 
-		$req = ContextIOExtLib\OAuthRequest::from_consumer_and_token($consumer, $accessToken, $httpMethod, $baseUrl, $signatureParams);
-		$sig_method = new ContextIOExtLib\OAuthSignatureMethod_HMAC_SHA1();
+		$req = OAuthRequest::from_consumer_and_token($consumer, $accessToken, $httpMethod, $baseUrl, $signatureParams);
+		$sig_method = new OAuthSignatureMethod_HMAC_SHA1();
 		$req->sign_request($sig_method, $consumer, $accessToken);
 
 		//get data using signed url
 		if ($this->authHeaders) {
 			if ($httpMethod != 'POST') {
-				$curl = curl_init((is_null($parameters) || is_string($parameters) || (count($parameters) == 0)) ? $baseUrl : $baseUrl. '?' . ContextIOExtLib\OAuthUtil::build_http_query($parameters));
+				$curl = curl_init((is_null($parameters) || is_string($parameters) || (count($parameters) == 0)) ? $baseUrl : $baseUrl. '?' . OAuthUtil::build_http_query($parameters));
 			}
 			else {
 				$curl = curl_init($baseUrl);
